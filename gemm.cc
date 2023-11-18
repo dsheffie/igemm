@@ -21,7 +21,7 @@ double timestamp() {
 //template <typename T>
 
 extern "C" {
-  void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k, int tid, int nthr);
+  void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k);
 }
 
 
@@ -87,7 +87,7 @@ int main() {
     B[i] = rand();
 
   double t0 = timestamp();
-  igemm(C0,A,B,n,m,k,0,1);
+  igemm(C0,A,B,n,m,k);
   double t1 = timestamp();
 
   std::cout << "optimized gemm " << gflops/(t1-t0) << " gflops/s\n";
