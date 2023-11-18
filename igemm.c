@@ -6,7 +6,7 @@ static inline int madd(int x, int a, int b) {
 
 void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k) {
   static const int VL = 1;
-  static const int II_BLK = 4;
+  static const int II_BLK = 2;
   static const int JJ_VL_BLK = 4;
   static const int JJ_BLK = VL * JJ_VL_BLK;
 
@@ -39,16 +39,6 @@ void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k) {
 	    vC1_2 = *( &Cg[(i+1)*n+j+(2*VL)] );
 	    vC1_3 = *( &Cg[(i+1)*n+j+(3*VL)] );
 	    
-	    vC2_0 = *( &Cg[(i+2)*n+j+(0*VL)] );
-	    vC2_1 = *( &Cg[(i+2)*n+j+(1*VL)] );
-	    vC2_2 = *( &Cg[(i+2)*n+j+(2*VL)] );
-	    vC2_3 = *( &Cg[(i+2)*n+j+(3*VL)] );
-	    
-	    vC3_0 = *( &Cg[(i+3)*n+j+(0*VL)] );
-	    vC3_1 = *( &Cg[(i+3)*n+j+(1*VL)] );
-	    vC3_2 = *( &Cg[(i+3)*n+j+(2*VL)] );
-	    vC3_3 = *( &Cg[(i+3)*n+j+(3*VL)] );
-
 	    for(int k = kk; k < (kk+CACHE_BLK); k++) {
 	      vB0 = (Bg[(k)*m+j+(0*VL)]);
 	      vB1 = (Bg[(k)*m+j+(1*VL)]);
@@ -68,20 +58,7 @@ void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k) {
 	      vC1_1 = madd(vC1_1, vA, vB1);
 	      vC1_2 = madd(vC1_2, vA, vB2);
 	      vC1_3 = madd(vC1_3, vA, vB3);
-	      
-	      //i = 2
-	      vA = (Ag[(i+2)*_k+k]);
-	      vC2_0 = madd(vC2_0, vA, vB0);
-	      vC2_1 = madd(vC2_1, vA, vB1);
-	      vC2_2 = madd(vC2_2, vA, vB2);
-	      vC2_3 = madd(vC2_3, vA, vB3);
-	      
-	      //i = 3
-	      vA = (Ag[(i+3)*_k+k]);
-	      vC3_0 = madd(vC3_0, vA, vB0);
-	      vC3_1 = madd(vC3_1, vA, vB1);
-	      vC3_2 = madd(vC3_2, vA, vB2);
-	      vC3_3 = madd(vC3_3, vA, vB3);
+
 	    }
 	    
 	    Cg[(i+0)*n+j+(0*VL)]= vC0_0;
@@ -93,16 +70,6 @@ void igemm(int *Cg, int *Ag, int *Bg, int n, int m, int _k) {
 	    Cg[(i+1)*n+j+(1*VL)]= vC1_1;
 	    Cg[(i+1)*n+j+(2*VL)]= vC1_2;
 	    Cg[(i+1)*n+j+(3*VL)]= vC1_3;
-	    
-	    Cg[(i+2)*n+j+(0*VL)]= vC2_0;
-	    Cg[(i+2)*n+j+(1*VL)]= vC2_1;
-	    Cg[(i+2)*n+j+(2*VL)]= vC2_2;
-	    Cg[(i+2)*n+j+(3*VL)]= vC2_3;
-	    
-	    Cg[(i+3)*n+j+(0*VL)]= vC3_0;
-	    Cg[(i+3)*n+j+(1*VL)]= vC3_1;
-	    Cg[(i+3)*n+j+(2*VL)]= vC3_2;
-	    Cg[(i+3)*n+j+(3*VL)]= vC3_3;
 	  }
 	}
       }
